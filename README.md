@@ -1,42 +1,56 @@
-## Candidate task
+# FastAPI Task
+
 Implement `POST /ask` in `app/main.py`.
 
-The endpoint must:
-1. Accept JSON: `{ "question": "..." }`.
-2. Validate that the question is not blank.
-3. Use `retrieve_documents(question)` from `app/retriever.py`.
-4. Return JSON with exactly these fields:
-   - `answer`: a concise answer grounded only in retrieved material.
-   - `sources`: a list of zero or more source objects, each with `id`, `title`, and `excerpt`.
-   - `confidence`: a float from 0 to 1.
-5. If the best retrieval score is below `0.45`, return this exact answer: `I don't have enough evidence to answer that.` with `sources: []`.
-6. Never use information from a document whose score is below `0.45`.
-7. Add or complete tests for successful retrieval, insufficient evidence, blank input, and a missing JSON field.
-8. Keep the implementation local: no external API, no LLM key, and no new database.
+## Requirements
 
-## Timebox
-45 minutes. You may use Claude Code and documentation. Please narrate major choices, run the tests, and review the final Git diff.
+- Accept:
+
+  ```json
+  { "question": "..." }
+  ```
+
+- Reject blank or missing questions.
+- Use `retrieve_documents(question)` from `app/retriever.py`.
+- Return:
+
+  ```json
+  {
+    "answer": "Concise answer based only on retrieved documents",
+    "sources": [
+      {
+        "id": "document-id",
+        "title": "Document title",
+        "excerpt": "Supporting text"
+      }
+    ],
+    "confidence": 0.0
+  }
+  ```
+
+- If the best document score is below `0.45`, return:
+
+  ```json
+  {
+    "answer": "I don't have enough evidence to answer that.",
+    "sources": [],
+    "confidence": 0.0
+  }
+  ```
+
+- Do not use documents with a score below `0.45`.
+- Add tests for:
+  - Successful retrieval
+  - Insufficient evidence
+  - Blank question
+  - Missing question
 
 ## Run
+
 ```bash
-python -m venv .venv
-# macOS/Linux: source .venv/bin/activate
-# Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload
 pytest -q
+uvicorn app.main:app --reload
 ```
 
-## Example request
-```bash
-curl -X POST http://127.0.0.1:8000/ask \
-  -H 'Content-Type: application/json' \
-  -d '{"question":"How long are support tickets retained?"}'
-```
-
-## Interviewer-only follow-up
-After the candidate has a working solution, say:
-
-> A user reports a confident answer supported by an irrelevant source. Explain how you would debug whether the fault is in retrieval or answer generation, then implement one small improvement without adding external services.
-
-Do not share this section before the initial task is done.
+You may use Claude Code and documentation. Please run the tests and review your final Git diff before finishing.
