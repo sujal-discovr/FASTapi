@@ -1,5 +1,3 @@
-# AI Interview Starter: Grounded Knowledge API
-
 ## Candidate task
 Implement `POST /ask` in `app/main.py`.
 
